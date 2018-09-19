@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 
@@ -7,15 +6,27 @@ const apiUrl = "http://ctp-zip-api.herokuapp.com/zip/";
 
 function City(props){
   return (
-    <div></div>
+    <div>
+      <ul>
+        {props.cities.map((city, key) => <li key={key}>{city.City}</li>)}
+      </ul>
+    </div>
   );
 }
 
 function ZipSearchFeild(props){
-
+  // const update = (event) => {
+  //   console.log(event.target.value)
+  //   console.log(props)
+  //   // props.updateTarget({update})
+  //   // props.updateTarget({data: "event.target.value"})
+  // }
+  const handleChange = (event) => {
+    props.updateTarget(event.target.value);
+  }
   return (
     <div>
-      <input type="text" placeHolder="Enter zip code" />
+      <input type="text" maxLength="5" placeholder="Enter zip code" onChange={handleChange.bind(this)}/>
     </div>
   );
 }
@@ -28,16 +39,44 @@ class App extends Component {
       cities: [],
       zipCode: "",
     };
+    this.updateZip = this.updateZip.bind(this)
   }
 
-  componentDidMount() {
-    fetch(apiUrl + "10002")
-      .then(response => response.json())
-      .then(data => this.setState({cities: data}))
+  // componentDidMount() {
+  //   fetch(apiUrl + this.state.zipCode)
+  //     .then(response => response.json())
+  //     .then(data => this.setState({cities: data}))
+  // }
+
+  componentDidUpdate(){
+    if (this.state.zipCode.length === 5 && this.state.cities === '') {
+      this.api();
+    } else {
+      this.state.cities = [];
+    }
   }
 
-  updateZip(event){
-    this.setState({zipCode: event.target.value})
+  api() {
+    fetch(apiUrl + this.state.zipCode)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => this.setState({
+        cities: data
+      }))
+      .then(() => console.log(this.state))
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
+  updateZip(data){
+    this.setState({zipCode: data}, function(){
+      if(this.state.zipCode.length === 5){
+        this.api();
+      }
+      console.log(this.state.zipCode)
+    })
   }
 
   render() {
@@ -46,11 +85,9 @@ class App extends Component {
         <div className="App-header">
           <h2>Zip Code Search</h2>
         </div>
-        <ZipSearchFeild zipCode={this.state.zipCode} onChange={this.updateZip} />
-        <ul>
-          {this.state.zipCode}
-          {this.state.cities.map(city => <li>{city.RecordNumber}</li>)}
-        </ul>
+        <ZipSearchFeild updateTarget={(response) => this.updateZip(response)} />
+        {/* <ZipSearchFeild updateTarget={(response) => this.setState({zipCode: response})} /> */}
+        <City cities={this.state.cities} zipCode={this.state.zipCode}/>
       </div>
     );
   }
