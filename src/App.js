@@ -6,13 +6,29 @@ const apiUrl = "http://ctp-zip-api.herokuapp.com/zip/";
 
 function City(props){
   return (
-    <div>
-      <ul>
-        {props.cities.map((city, key) => <li key={key}>{city.City}</li>)}
-      </ul>
+    <div className="">
+      {props.cities.map((city, key) =>
+      <div className="row justify-content-center" key={city.RecordNumber}>
+        <div className="card col-lg-4 col-md-4">
+          <div className="card-header" >
+            {city.LocationText}
+          </div>
+          <ul>
+            <li>State: {city.State}</li>
+            <li>Location: ({city.Lat}, {city.Long})</li>
+            <li>Population: {city.EstimatedPopulation}</li>
+            <li>Total Wages: {city.TotalWages}</li>
+          </ul>
+        </div>
+        </div>
+    )}
     </div>
   );
 }
+      // <ul>
+      //   {props.cities.map((city, key) => 
+      //   <li key={key}>{city.City}</li>)}
+      // </ul>
 
 function ZipSearchFeild(props){
   // const update = (event) => {
@@ -26,6 +42,7 @@ function ZipSearchFeild(props){
   }
   return (
     <div>
+      <label><strong>Zip Code:</strong></label>
       <input type="text" maxLength="5" placeholder="Enter zip code" onChange={handleChange.bind(this)}/>
     </div>
   );
@@ -83,7 +100,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <h2>Zip Code Search</h2>
+          <h1>Zip Code Search</h1>
         </div>
         <ZipSearchFeild updateTarget={(response) => this.updateZip(response)} />
         {/* <ZipSearchFeild updateTarget={(response) => this.setState({zipCode: response})} /> */}
