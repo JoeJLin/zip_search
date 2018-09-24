@@ -4,10 +4,13 @@ import './App.css';
 
 const apiUrl = "http://ctp-zip-api.herokuapp.com/zip/";
 
-function City(props){
+function City({cities}){
+  if(!cities) {
+    return (<div>Not Found!!!!!</div>)
+  }
   return (
     <div className="">
-      {props.cities.map((city, key) =>
+      {cities.map((city, key) =>
       <div className="row justify-content-center" key={city.RecordNumber}>
         <div className="card col-lg-4 col-md-4">
           <div className="card-header" >
@@ -25,18 +28,8 @@ function City(props){
     </div>
   );
 }
-      // <ul>
-      //   {props.cities.map((city, key) => 
-      //   <li key={key}>{city.City}</li>)}
-      // </ul>
 
 function ZipSearchFeild(props){
-  // const update = (event) => {
-  //   console.log(event.target.value)
-  //   console.log(props)
-  //   // props.updateTarget({update})
-  //   // props.updateTarget({data: "event.target.value"})
-  // }
   const handleChange = (event) => {
     props.updateTarget(event.target.value);
   }
@@ -56,21 +49,6 @@ class App extends Component {
       cities: [],
       zipCode: "",
     };
-    this.updateZip = this.updateZip.bind(this)
-  }
-
-  // componentDidMount() {
-  //   fetch(apiUrl + this.state.zipCode)
-  //     .then(response => response.json())
-  //     .then(data => this.setState({cities: data}))
-  // }
-
-  componentDidUpdate(){
-    if (this.state.zipCode.length === 5 && this.state.cities === '') {
-      this.api();
-    } else {
-      this.state.cities = [];
-    }
   }
 
   api() {
@@ -88,10 +66,11 @@ class App extends Component {
   }
 
   updateZip(data){
-    this.setState({zipCode: data}, function(){
-      if(this.state.zipCode.length === 5){
+    this.setState({zipCode: data}, () => {
+      if(this.state.zipCode.length === 5)
         this.api();
-      }
+      if(this.state.cities)
+        this.setState({ cities: [] });
       console.log(this.state.zipCode)
     })
   }
@@ -102,9 +81,8 @@ class App extends Component {
         <div className="App-header">
           <h1>Zip Code Search</h1>
         </div>
-        <ZipSearchFeild updateTarget={(response) => this.updateZip(response)} />
-        {/* <ZipSearchFeild updateTarget={(response) => this.setState({zipCode: response})} /> */}
-        <City cities={this.state.cities} zipCode={this.state.zipCode}/>
+          <ZipSearchFeild updateTarget={(response) => this.updateZip(response)} />
+          <City cities={this.state.cities} zipCode={this.state.zipCode}/>
       </div>
     );
   }
